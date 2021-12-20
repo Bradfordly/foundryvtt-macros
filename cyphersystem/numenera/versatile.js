@@ -6,7 +6,7 @@ if (!actor || actor.data.type != "PC")
 let currentPool = actor.getFlag("cyphersystem", "currentPool");
 
 if (currentPool == null)
-  currentPool = "None"
+  currentPool = "None";
 
 // Render the popup to select the pool bonus to modify
 let applyChanges = false;
