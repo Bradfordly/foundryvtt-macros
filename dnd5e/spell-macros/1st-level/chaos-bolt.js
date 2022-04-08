@@ -1,7 +1,9 @@
-/**
+/*
  * System: D&D5e
  * Chaos Bolt - automates the selection of elemental damage type based on damage roll results.
- * Rolls a new attack and 
+ * Prompts user to roll another spell attack on matching damage dice values.
+ *
+ * Depends on Midi QOL module for on-use macro integration
  */
 
 // get the actor data of the selected token
