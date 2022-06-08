@@ -69,9 +69,13 @@ else
                         });
                         await targetActor.update({"data.attributes.hp.value" : targetActor.data.data.attributes.hp.value + number});
                     }
-                     
+                    
+                    //Foundry automatically subtracts a usage when an item is invoked 
+                    //so we need to decrement our healing number by 1 so the usages are updated properly
+                    let newNumber = --number;
+
                     //Update the value under "Features"
-                    featUpdate.data.uses.value = featUpdate.data.uses.value - number;
+                    featUpdate.data.uses.value = featUpdate.data.uses.value - newNumber;
                     await actorData.items.getName(layName).update({ "data.uses.value" : featUpdate.data.uses.value });
 
                     //Update resource counter only if the "Lay on Hands" feature is set to consume it
