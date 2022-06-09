@@ -55,13 +55,18 @@ if (args[0].hitTargets.length > 0) {
   }
   
   // apply the damage of the damage roll as the selected damage type
-  let damageRoll = new Roll(`${args[0].damageRoll.total}`).roll();
+  let damageRoll = await new Roll(`${args[0].damageRoll.total}`).roll();
+  let target = canvas.tokens.get(args[0].targets[0]?._id);
+  
+  //let target = args[0].hitTargets.map((t) => canvas.tokens.get(t._id));
+  //FIXME: why do I not work
+  
   await new MidiQOL.DamageOnlyWorkflow(
     actor,
     token,
     damageRoll.total,
     type,
-    args[0].hitTargets.map((t) => canvas.tokens.get(t._id)),
+    target,
     damageRoll,
     { itemCardId: args[0].itemCardId, useOther: false }
   );
