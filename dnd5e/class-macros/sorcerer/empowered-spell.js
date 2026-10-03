@@ -1,7 +1,8 @@
-/**
- * This macro let sorcerers reroll their damage consuming 1 sorcery point. This macro strongly depends on midi-qol module to get the rolled damage dice and the dice formula of the spell cast. It gets the last chat message of "type" spell and parses the html of that card (you can add a check to verify if the actual actor id is the same that cast that spell by comparing the data-actor-id of the chat message with the actual id)
- */
- 
+/*
+This macro let sorcerers reroll their damage consuming 1 sorcery point. This macro strongly depends on midi-qol module to get the rolled damage dice 
+and the dice formula of the spell cast. It gets the last chat message of "type" spell and parses the html of that card (you can add a check to 
+verify if the actual actor id is the same that cast that spell by comparing the data-actor-id of the chat message with the actual id)
+*/
 
 console.log("EMPOWER SPELL MACRO",args)
 
