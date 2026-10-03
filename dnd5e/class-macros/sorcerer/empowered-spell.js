@@ -1,41 +1,40 @@
 /*
-This macro let sorcerers reroll their damage consuming 1 sorcery point. This macro strongly depends on midi-qol module to get the rolled damage dice 
-and the dice formula of the spell cast. It gets the last chat message of "type" spell and parses the html of that card (you can add a check to 
-verify if the actual actor id is the same that cast that spell by comparing the data-actor-id of the chat message with the actual id)
+This macro automates the Empowered Spell feature of D&D 5E Sorcerers
+
+The Midi-QOL module is required to use this macro to get the rolled damage dice
+and the dice formula of the spell cast. It gets the last chat message of "type"
+spell and parses the html of that card.
+ 
+You can add a check to verify if the actual actor id is the same that cast the spell
+by comparing the data-actor-id of the chat message with the actual id.
 */
 
 console.log("EMPOWER SPELL MACRO",args)
 
+// handle no selection
 if(args[0] !== 'on') return
 console.log(actor)
 if(!args[4]){
    ui.notifications.error("No target selected")
    return
 }
-
 let target = canvas.tokens.get(args[4])
-let player = args[2]
 
+// check for valid selection and residual sorcery points
+let player = args[2]
 if(!player){
    ui.notifications.error("No player selected")
    return
 } else {
-  //check for residual sorcery points
   if(player.data.resources.primary.value < 1) {
    ui.notifications.info("You have no sorcery points left")
 return
   }
 }
-
 let chaMod = player.data.abilities.cha.mod
 console.log(target, chaMod)
 
-/* parse the spell card to get the damage dice and the dice formula
-** - damage dice are needed to let the player choose which ones he want to reroll and to consequently re-apply the amount of
-** damage chosen to the target residual HP value
-** - dice formula is needed to reroll dice with the same formula used before 
-**
-*/
+// parse the spell card to get the damage dice and the dice formula
 const lastDamageRolls = $('.midi-qol-item-card[data-spell-level]').last().find('.midi-qol-damage-roll').find('.roll.die')
 const diceFormula = $('.midi-qol-item-card[data-spell-level]').last().find('.midi-qol-damage-roll').find('.dice-formula')
 console.log(lastDamageRolls, diceFormula)
@@ -47,15 +46,15 @@ console.log($(obj))
 
 inputs  += `</div></form>`
 
+// set a limit to the number of dice the sorcerer can change based on their charisma modifier
 var limit = chaMod;
-// set a limit to the number of dice the sorcerer can change based on his/her charisma modifier
 $('input.empower-dice-selection').on('change', function(evt) {
    if($(this).siblings(':checked').length >= limit) {
        this.checked = false;
    }
 });
 
-
+// present dice selection window
 new Dialog({
   title: `Select Dice to Reroll`,
   content: inputs ,
@@ -77,6 +76,7 @@ new Dialog({
              numberOfDiceToRoll++
           }
         })
+         
         // calculate hp points based on the player choice
         let newHealth = healthToReturn + target.actor.data.data.attributes.hp.value
         if(newHealth > target.actor.data.data.attributes.hp.max) {
@@ -88,6 +88,7 @@ new Dialog({
         if(!die){
           ui.notifications.error("Spell's dice formula not found")
         }
+         
         // apply hp to the target
         await target.actor.update({"data.attributes.hp.value": newHealth})
         let message = await new Roll(`${numberOfDiceToRoll}d${die}`).roll().toMessage({ flavor: `${player.name} empowers the spell!`, speaker})
@@ -98,13 +99,11 @@ new Dialog({
            let damage = message._roll._total
            let health = target.actor.data.data.attributes.hp.value
            let subtractedHealth = health - damage < 0 ? 0 : health - damage
-//           target.actor.data.data.attributes.hp.value = subtractedHealth
+           target.actor.data.data.attributes.hp.value = subtractedHealth
            await target.actor.update({"data.attributes.hp.value": subtractedHealth})
            await actor.update({"data.resources.primary.value": actor.data.data.resources.primary.value -1})
-           //actor.data.data.resources.primary.value = actor.data.data.resources.primary.value -1
+           actor.data.data.resources.primary.value = actor.data.data.resources.primary.value -1
         }
-
-
       }
     },
     no: {
